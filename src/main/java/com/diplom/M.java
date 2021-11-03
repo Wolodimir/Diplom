@@ -1,6 +1,6 @@
 package com.diplom;
 
-public class Starter {
+public class M {
 
     final static double m = 6.63 * (1e-24);//масса одной частицы аргона
     final static int N = 10;//кол-во моделируемых частиц по одной оси
@@ -31,8 +31,10 @@ public class Starter {
     static double[] FyPrev; //массивы для сохранения значений (используются в расчёте следующего шага)
     static double[] FzPrev;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
         initialCoords();
+        calcPowers();
+        timeModeling();
 
     }
 
@@ -51,5 +53,67 @@ public class Starter {
             }
         }
     }
+
+    static public void calcPowers() {
+        double r;
+        double f0;
+
+        for (int i = 0; i < Math.pow(N, 3); ++i) {
+            for (int j = 0; j < Math.pow(N, 3); ++j) {
+                if (i != j) {
+                    r = Math.sqrt(Math.pow((x[i] - x[j]), 2) + Math.pow((y[i] - y[j]), 2) + Math.pow((z[i] - z[j]), 2));
+                    f0 = (double) 48 * (EPS / SIG) * (Math.pow((SIG / r), 13) - 0.5 * Math.pow((SIG / r), 7));
+                    Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
+                    Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
+                    Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
+                }
+            }
+        }
+    }
+
+    static public void timeModeling() throws InterruptedException{
+
+        double time = Math.pow(10, -6);
+
+        int k = 0;
+        for (double t = 0; t < time; t += M.dt) {
+
+            FxPrev = Fx.clone();
+            FyPrev = Fy.clone();
+            FzPrev = Fz.clone();
+
+
+            Thread x = new ThreadX();
+            Thread y = new ThreadY();
+            Thread z = new ThreadZ();
+
+            x.start();
+            y.start();
+            z.start();
+            x.join();
+            y.join();
+            z.join();
+
+            System.out.println("С координатами закончили");
+
+            calcPowers();
+
+            Thread Vx = new ThreadVx();
+            Thread Vy = new ThreadVy();
+            Thread Vz = new ThreadVz();
+
+            Vx.start();
+            Vy.start();
+            Vz.start();
+            Vx.join();
+            Vy.join();
+            Vz.join();
+
+            k++;
+            System.out.println("--------" + k + "---------");
+        }
+
+    }
+
 
 }
