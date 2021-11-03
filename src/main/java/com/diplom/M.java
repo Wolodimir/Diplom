@@ -31,7 +31,7 @@ public class M {
     static double[] FyPrev; //массивы для сохранения значений (используются в расчёте следующего шага)
     static double[] FzPrev;
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args) throws InterruptedException {
         initialCoords();
         calcPowers();
         timeModeling();
@@ -71,7 +71,7 @@ public class M {
         }
     }
 
-    static public void timeModeling() throws InterruptedException{
+    static public void timeModeling() {
 
         double time = Math.pow(10, -6);
 
@@ -82,32 +82,39 @@ public class M {
             FyPrev = Fy.clone();
             FzPrev = Fz.clone();
 
+            for (int i = 0; i < Math.pow(N, 3); i++) {
 
-            Thread x = new ThreadX();
-            Thread y = new ThreadY();
-            Thread z = new ThreadZ();
+                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));//новое положение частицы X
+                if (x[i] >= (L - R) && Vx[i] > 0) { //граничные условия по оси Х
+                    Vx[i] = -Vx[i];
+                } else if (x[i] <= R && Vx[i] < 0) {
+                    Vx[i] = -Vx[i];
+                }
 
-            x.start();
-            y.start();
-            z.start();
-            x.join();
-            y.join();
-            z.join();
+                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * Math.pow(dt, 2) / (2 * m));
+                if (y[i] >= (L - R) && Vy[i] > 0) { //граничные условия по оси Y
+                    Vy[i] = -Vy[i];
+                } else if (y[i] <= R && Vy[i] < 0) {
+                    Fy[i] = 0;
+                    Vy[i] = -Vy[i];
+                }
 
-            System.out.println("С координатами закончили");
+                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * Math.pow(dt, 2) / (2 * m));
+                if (z[i] >= (L - R) && Vz[i] > 0) { //граничные условия по оси Z
+                    Vz[i] = -Vz[i];
+                } else if (z[i] <= R && Vz[i] < 0) {
+                    Fz[i] = 0;
+                    Vz[i] = -Vz[i];
+                }
+            }
 
             calcPowers();
 
-            Thread Vx = new ThreadVx();
-            Thread Vy = new ThreadVy();
-            Thread Vz = new ThreadVz();
-
-            Vx.start();
-            Vy.start();
-            Vz.start();
-            Vx.join();
-            Vy.join();
-            Vz.join();
+            for (int i = 0; i < Math.pow(N, 3); i++) {//определение скорости частиц
+                Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
+                Vy[i] = Vy[i] + 0.5 * ((Fy[i] + FyPrev[i]) / m) * dt;
+                Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
+            }
 
             k++;
             System.out.println("--------" + k + "---------");
