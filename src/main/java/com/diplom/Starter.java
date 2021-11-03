@@ -32,8 +32,24 @@ public class Starter {
     static double[] FzPrev;
 
     public static void main(String[] args) {
+        initialCoords();
 
+    }
 
+    static public void initialCoords() {
+        int iter = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < N; k++) {
+                    x[iter] = ((i + 1) * L / N);//((i + 1) * L / N);
+                    y[iter] = ((j + 1) * L / N);
+                    z[iter] = ((k + 1) * L / N);
+
+                    iter++;
+                    //System.out.println("номер --- " + iter + "     значение   " + z[k] + "      " + x[k] + "      " + y[k]);
+                }
+            }
+        }
     }
 
 }
