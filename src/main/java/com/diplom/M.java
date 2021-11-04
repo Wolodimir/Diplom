@@ -61,8 +61,8 @@ public class M {
         for (int i = 0; i < Math.pow(N, 3); ++i) {
             for (int j = 0; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
-                    r = Math.sqrt(AnotherApproxPower((x[i] - x[j]), 2) + AnotherApproxPower((y[i] - y[j]), 2) + AnotherApproxPower((z[i] - z[j]), 2));
-                    f0 = (double) 48 * (EPS / SIG) * (AnotherApproxPower((SIG / r), 13) - 0.5 * AnotherApproxPower((SIG / r), 7));
+                    r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
+                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
                     Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
                     Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
                     Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
@@ -84,14 +84,14 @@ public class M {
 
             for (int i = 0; i < Math.pow(N, 3); i++) {
 
-                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));//новое положение частицы X
+                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * FastPowerFractional(dt, 2) / (2 * m));//новое положение частицы X
                 if (x[i] >= (L - R) && Vx[i] > 0) { //граничные условия по оси Х
                     Vx[i] = -Vx[i];
                 } else if (x[i] <= R && Vx[i] < 0) {
                     Vx[i] = -Vx[i];
                 }
 
-                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));
+                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * FastPowerFractional(dt, 2) / (2 * m));
                 if (y[i] >= (L - R) && Vy[i] > 0) { //граничные условия по оси Y
                     Vy[i] = -Vy[i];
                 } else if (y[i] <= R && Vy[i] < 0) {
@@ -99,7 +99,7 @@ public class M {
                     Vy[i] = -Vy[i];
                 }
 
-                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));
+                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * FastPowerFractional(dt, 2) / (2 * m));
                 if (z[i] >= (L - R) && Vz[i] > 0) { //граничные условия по оси Z
                     Vz[i] = -Vz[i];
                 } else if (z[i] <= R && Vz[i] < 0) {
@@ -116,16 +116,48 @@ public class M {
                 Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
             }
 
+            /*for (int i = 0; i < Math.pow(N, 3); i++) {//Что получается после каждого шага по времени
+                System.out.println((i + 1) + "  -----  " + Vx[i] + "  " + Vy[i] + "  " + Vz[i]);
+            }
+            System.out.println("***************************************************");*/
+
             k++;
             System.out.println("--------" + k + "---------");
         }
 
     }
 
-    static double AnotherApproxPower(double a, double b) {
-        int tmp = (int)(Double.doubleToLongBits(a) >> 32);
-        int tmp2 = (int)(b * (tmp - 1072632447) + 1072632447);
-        return Double.longBitsToDouble(((long)tmp2) << 32);
+    static double OldApproximatePower(double b, double e) {
+        long i = Double.doubleToLongBits(b);
+        i = (long)(4606853616395542500L + e * (i - 4606853616395542500L));
+        return Double.longBitsToDouble(i);
+    }
+
+    static double BinaryPower(double b, long e) {
+        double v = 1d;
+        while(e > 0) {
+            if((e & 1) != 0) {
+                v *= b;
+            }
+            b *= b;
+            e >>= 1;
+        }
+        return v;
+    }
+
+    static double FastPowerFractional(double b, double e) {
+        if(b == 1d || e == 0d) {
+            return 1d;
+        }
+
+        double absExp = Math.abs(e);
+        long eIntPart = (long)absExp;
+        double eFractPart = absExp - eIntPart;
+        double result = OldApproximatePower(b, eFractPart) * BinaryPower(b, eIntPart);
+        if(e < 0d) {
+            return 1d / result;
+        }
+        return result;
     }
 
 
