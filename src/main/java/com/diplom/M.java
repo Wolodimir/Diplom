@@ -61,8 +61,8 @@ public class M {
         for (int i = 0; i < Math.pow(N, 3); ++i) {
             for (int j = 0; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
-                    r = Math.sqrt(Math.pow((x[i] - x[j]), 2) + Math.pow((y[i] - y[j]), 2) + Math.pow((z[i] - z[j]), 2));
-                    f0 = (double) 48 * (EPS / SIG) * (Math.pow((SIG / r), 13) - 0.5 * Math.pow((SIG / r), 7));
+                    r = Math.sqrt(AnotherApproxPower((x[i] - x[j]), 2) + AnotherApproxPower((y[i] - y[j]), 2) + AnotherApproxPower((z[i] - z[j]), 2));
+                    f0 = (double) 48 * (EPS / SIG) * (AnotherApproxPower((SIG / r), 13) - 0.5 * AnotherApproxPower((SIG / r), 7));
                     Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
                     Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
                     Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
@@ -84,14 +84,14 @@ public class M {
 
             for (int i = 0; i < Math.pow(N, 3); i++) {
 
-                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));//новое положение частицы X
+                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));//новое положение частицы X
                 if (x[i] >= (L - R) && Vx[i] > 0) { //граничные условия по оси Х
                     Vx[i] = -Vx[i];
                 } else if (x[i] <= R && Vx[i] < 0) {
                     Vx[i] = -Vx[i];
                 }
 
-                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * Math.pow(dt, 2) / (2 * m));
+                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));
                 if (y[i] >= (L - R) && Vy[i] > 0) { //граничные условия по оси Y
                     Vy[i] = -Vy[i];
                 } else if (y[i] <= R && Vy[i] < 0) {
@@ -99,7 +99,7 @@ public class M {
                     Vy[i] = -Vy[i];
                 }
 
-                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * Math.pow(dt, 2) / (2 * m));
+                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * AnotherApproxPower(dt, 2) / (2 * m));
                 if (z[i] >= (L - R) && Vz[i] > 0) { //граничные условия по оси Z
                     Vz[i] = -Vz[i];
                 } else if (z[i] <= R && Vz[i] < 0) {
@@ -120,6 +120,12 @@ public class M {
             System.out.println("--------" + k + "---------");
         }
 
+    }
+
+    static double AnotherApproxPower(double a, double b) {
+        int tmp = (int)(Double.doubleToLongBits(a) >> 32);
+        int tmp2 = (int)(b * (tmp - 1072632447) + 1072632447);
+        return Double.longBitsToDouble(((long)tmp2) << 32);
     }
 
 
