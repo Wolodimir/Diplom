@@ -47,10 +47,47 @@ public class M {
                     y[iter] = ((j + 1) * L / N);
                     z[iter] = ((k + 1) * L / N);
 
+                    System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
                     iter++;
-                    //System.out.println("номер --- " + iter + "     значение   " + z[k] + "      " + x[k] + "      " + y[k]);
                 }
             }
+        }
+    }
+
+    /*if(((x[i] - x[j]) > -2.7E-10 || (x[i] - x[j]) < 2.7E-10)
+            && ((y[i] - y[j]) > -2.7E-10 || (y[i] - y[j]) < 2.7E-10)
+            && ((z[i] - z[j]) > -2.7E-10 || (z[i] - z[j]) < 2.7E-10)){
+
+    }*/
+
+    public static double abs(double value) {
+        return Double.longBitsToDouble(
+                Double.doubleToRawLongBits(value) & 0x7fffffffffffffffL);
+    }
+
+    static public void cutedCulcPowers() {
+        double r;
+        double f0;
+        int h = 0;
+        double rasst = 2.7E-10;
+        for (int i = 0; i < Math.pow(N, 3); ++i) {
+            for (int j = 0; j < Math.pow(N, 3); ++j) {
+                if (i != j) {
+                    if ((abs(x[i] - x[j]) < rasst)
+                            && (abs(y[i] - y[j]) < rasst)
+                            && (abs(z[i] - z[j]) < rasst)) {
+
+                        r = Math.sqrt(Math.pow((x[i] - x[j]), 2) + Math.pow((y[i] - y[j]), 2) + Math.pow((z[i] - z[j]), 2));
+                        f0 = (double) 48 * (EPS / SIG) * (Math.pow((SIG / r), 13) - 0.5 * Math.pow((SIG / r), 7));
+                        Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
+                        Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
+                        Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
+                        ++h;
+                    }
+                }
+            }
+            //System.out.println(++h);
+            h = 0;
         }
     }
 
@@ -107,8 +144,8 @@ public class M {
                     Vz[i] = -Vz[i];
                 }
             }
-
-            calcPowers();
+            //todo
+            cutedCulcPowers();
 
             for (int i = 0; i < Math.pow(N, 3); i++) {//определение скорости частиц
                 Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
