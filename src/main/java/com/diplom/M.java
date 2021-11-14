@@ -163,7 +163,7 @@ public class M {
                 FileWriter fw = new FileWriter(file, true);
                 fw.write("[\n");
                 for (int i = 0; i < Math.pow(N, 3); i++) {
-                    fw.write("{x:" + x[i] + ",y:" + y[i] + ",z:" + z[i] + "};" +"\n");
+                    fw.write("{\"x\":\"" + x[i] + "\",\"y\":\"" + y[i] + "\",\"z\":\"" + z[i] + "\"};" +"\n");
                 }
                 fw.write("]");
                 fw.write("next\n");
