@@ -11,7 +11,7 @@ public class M {
     final static double EPS = 165 * (1e-23);
     final static double SIG = 0.341 * (1e-9);//постоянные для потенциала Леннарда-Джонса
     final static double R = SIG / 3;
-    final static int T = 120; //средняя температура
+    final static int T = 500; //средняя температура
     final static double P = 11 * Math.pow(10, 6); //желаемое давление
     //final static double V = Math.pow(N, (2 * KB * T) / P); //объем куба
     final static double V = Math.pow(N, 2) * (KB * T) / P;
@@ -64,7 +64,8 @@ public class M {
         double r;
         double f0;
         int h = 0;
-        double rasst = 2.7E-10;
+        double rasst = 3.5E-10;
+        //2.7 для 1000 частиц, 3.5 для 125
         for (int i = 0; i < Math.pow(N, 3); ++i) {
             for (int j = 0; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
@@ -107,7 +108,7 @@ public class M {
 
         double time = Math.pow(10, -6);
 
-        File file = new File("exp.txt");
+        File file = new File("coords.txt");
 
         int k = 0;
         for (double t = 0; t < time; t += M.dt) {
@@ -160,9 +161,11 @@ public class M {
 
             if (k % 250 == 0) {
                 FileWriter fw = new FileWriter(file, true);
+                fw.write("[\n");
                 for (int i = 0; i < Math.pow(N, 3); i++) {
-                    fw.write("[" + x[i] + ";" + y[i] + ";" + z[i] + "]," +"\n");
+                    fw.write("{x:" + x[i] + ",y:" + y[i] + ",z:" + z[i] + "};" +"\n");
                 }
+                fw.write("]");
                 fw.write("next\n");
                 fw.close();
             }
