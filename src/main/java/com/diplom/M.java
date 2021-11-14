@@ -1,9 +1,11 @@
 package com.diplom;
 
+import java.io.*;
+
 public class M {
 
     final static double m = 6.63 * (1e-24);//масса одной частицы аргона
-    final static int N = 10;//кол-во моделируемых частиц по одной оси
+    final static int N = 5;//кол-во моделируемых частиц по одной оси
     static double dt = 2 * Math.pow(10, (-23));//шаг по времени
     final static double KB = 1.38 * Math.pow(10, -23);//константа Больцмана
     final static double EPS = 165 * (1e-23);
@@ -31,11 +33,10 @@ public class M {
     static double[] FyPrev; //массивы для сохранения значений (используются в расчёте следующего шага)
     static double[] FzPrev;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws IOException {
         initialCoords();
         calcPowers();
         timeModeling();
-
     }
 
     static public void initialCoords() {
@@ -53,12 +54,6 @@ public class M {
             }
         }
     }
-
-    /*if(((x[i] - x[j]) > -2.7E-10 || (x[i] - x[j]) < 2.7E-10)
-            && ((y[i] - y[j]) > -2.7E-10 || (y[i] - y[j]) < 2.7E-10)
-            && ((z[i] - z[j]) > -2.7E-10 || (z[i] - z[j]) < 2.7E-10)){
-
-    }*/
 
     public static double abs(double value) {
         return Double.longBitsToDouble(
@@ -108,9 +103,11 @@ public class M {
         }
     }
 
-    static public void timeModeling() {
+    static public void timeModeling() throws IOException {
 
         double time = Math.pow(10, -6);
+
+        File file = new File("exp.txt");
 
         int k = 0;
         for (double t = 0; t < time; t += M.dt) {
@@ -160,20 +157,28 @@ public class M {
 
             k++;
             System.out.println("--------" + k + "---------");
-        }
 
+            if (k % 250 == 0) {
+                FileWriter fw = new FileWriter(file, true);
+                for (int i = 0; i < Math.pow(N, 3); i++) {
+                    fw.write("[" + x[i] + ";" + y[i] + ";" + z[i] + "]," +"\n");
+                }
+                fw.write("next\n");
+                fw.close();
+            }
+        }
     }
 
     static double OldApproximatePower(double b, double e) {
         long i = Double.doubleToLongBits(b);
-        i = (long)(4606853616395542500L + e * (i - 4606853616395542500L));
+        i = (long) (4606853616395542500L + e * (i - 4606853616395542500L));
         return Double.longBitsToDouble(i);
     }
 
     static double BinaryPower(double b, long e) {
         double v = 1d;
-        while(e > 0) {
-            if((e & 1) != 0) {
+        while (e > 0) {
+            if ((e & 1) != 0) {
                 v *= b;
             }
             b *= b;
@@ -183,15 +188,15 @@ public class M {
     }
 
     static double FastPowerFractional(double b, double e) {
-        if(b == 1d || e == 0d) {
+        if (b == 1d || e == 0d) {
             return 1d;
         }
 
         double absExp = Math.abs(e);
-        long eIntPart = (long)absExp;
+        long eIntPart = (long) absExp;
         double eFractPart = absExp - eIntPart;
         double result = OldApproximatePower(b, eFractPart) * BinaryPower(b, eIntPart);
-        if(e < 0d) {
+        if (e < 0d) {
             return 1d / result;
         }
         return result;
