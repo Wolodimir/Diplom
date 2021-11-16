@@ -5,7 +5,7 @@ import java.io.*;
 public class M {
 
     final static double m = 6.63 * (1e-24);//масса одной частицы аргона
-    final static int N = 5;//кол-во моделируемых частиц по одной оси
+    final static int N = 10;//кол-во моделируемых частиц по одной оси
     static double dt = 2 * Math.pow(10, (-23));//шаг по времени
     final static double KB = 1.38 * Math.pow(10, -23);//константа Больцмана
     final static double EPS = 165 * (1e-23);
@@ -33,7 +33,20 @@ public class M {
     static double[] FyPrev; //массивы для сохранения значений (используются в расчёте следующего шага)
     static double[] FzPrev;
 
-    public static void main(String[] args) throws IOException {
+    static double rasst = 2.7E-10;
+    //2.7 для 1000 частиц, 3.5 для 125;
+
+    static int i1 = (int) Math.pow(N, 3) / 10;
+    static int i2 = (int) (Math.pow(N, 3) / 10) * 2;
+    static int i3 = (int) (Math.pow(N, 3) / 10) * 3;
+    static int i4 = (int) (Math.pow(N, 3) / 10) * 4;
+    static int i5 = (int) (Math.pow(N, 3) / 10) * 5;
+    static int i6 = (int) (Math.pow(N, 3) / 10) * 6;
+    static int i7 = (int) (Math.pow(N, 3) / 10) * 7;
+    static int i8 = (int) (Math.pow(N, 3) / 10) * 8;
+    static int i9 = (int) (Math.pow(N, 3) / 10) * 9;
+
+    public static void main(String[] args) throws IOException, InterruptedException {
         initialCoords();
         calcPowers();
         timeModeling();
@@ -60,12 +73,46 @@ public class M {
                 Double.doubleToRawLongBits(value) & 0x7fffffffffffffffL);
     }
 
+    static public void threadingCulcPowers() throws InterruptedException {
+        Thread1 thread1 = new Thread1();
+        Thread2 thread2 = new Thread2();
+        Thread3 thread3 = new Thread3();
+        Thread4 thread4 = new Thread4();
+        Thread5 thread5 = new Thread5();
+        Thread6 thread6 = new Thread6();
+        Thread7 thread7 = new Thread7();
+        Thread8 thread8 = new Thread8();
+        Thread9 thread9 = new Thread9();
+        Thread10 thread10 = new Thread10();
+
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        thread4.start();
+        thread5.start();
+        thread6.start();
+        thread7.start();
+        thread8.start();
+        thread9.start();
+        thread10.start();
+
+        thread1.join();
+        thread2.join();
+        thread3.join();
+        thread4.join();
+        thread5.join();
+        thread6.join();
+        thread7.join();
+        thread8.join();
+        thread9.join();
+        thread10.join();
+    }
+
     static public void cutedCulcPowers() {
         double r;
         double f0;
         int h = 0;
-        double rasst = 3.5E-10;
-        //2.7 для 1000 частиц, 3.5 для 125
+
         for (int i = 0; i < Math.pow(N, 3); ++i) {
             for (int j = 0; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
@@ -104,7 +151,7 @@ public class M {
         }
     }
 
-    static public void timeModeling() throws IOException {
+    static public void timeModeling() throws IOException, InterruptedException {
 
         double time = Math.pow(10, -6);
 
@@ -143,8 +190,9 @@ public class M {
                 }
             }
             //todo
-            cutedCulcPowers();
-
+            //cutedCulcPowers();
+            threadingCulcPowers();
+            //System.out.println("taked");
             for (int i = 0; i < Math.pow(N, 3); i++) {//определение скорости частиц
                 Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
                 Vy[i] = Vy[i] + 0.5 * ((Fy[i] + FyPrev[i]) / m) * dt;
