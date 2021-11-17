@@ -10,9 +10,8 @@ public class Thread2 extends Thread{
         double r;
         double f0;
         int i = i1;
-
         for (; i < i2; ++i) {
-            for (int j = 0; j < Math.pow(N, 3); ++j) {
+            for (int j = 0; j < i3; ++j) {
                 if (i != j) {
                     if ((abs(x[i] - x[j]) < rasst)
                             && (abs(y[i] - y[j]) < rasst)

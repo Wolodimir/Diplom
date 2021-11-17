@@ -186,7 +186,7 @@ public class MainLogic {
 
             k++;
             if (k % 250 == 0) {
-                Output.fileOutput(file, x, y, z);
+                //Output.fileOutput(file, x, y, z);
             }
         }
     }

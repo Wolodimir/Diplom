@@ -12,7 +12,7 @@ public class Thread9 extends Thread{
         int i = i8;
 
         for (; i < i9; ++i) {
-            for (int j = 0; j < Math.pow(N, 3); ++j) {
+            for (int j = i7; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
                     if ((abs(x[i] - x[j]) < rasst)
                             && (abs(y[i] - y[j]) < rasst)
