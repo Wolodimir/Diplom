@@ -2,6 +2,12 @@ package com.diplom;
 
 public class ExternalFunctions {
 
+    /**
+     * Все методы, которые выполняют вспомогательную работу размещаются здесь.
+     * Сейчас здесь заменители стандартных методов возведения в степень и
+     * модуля числа. Эти работают немного быстрее.
+     * */
+
     public static double OldApproximatePower(double b, double e) {
         long i = Double.doubleToLongBits(b);
         i = (long) (4606853616395542500L + e * (i - 4606853616395542500L));

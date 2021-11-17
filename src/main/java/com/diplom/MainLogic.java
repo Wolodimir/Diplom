@@ -24,9 +24,9 @@ public class MainLogic {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < N; k++) {
-                    x[iter] = ((i + 1) * Data.L / N);//((i + 1) * L / N);
-                    y[iter] = ((j + 1) * Data.L / N);
-                    z[iter] = ((k + 1) * Data.L / N);
+                    x[iter] = ((i + 1) * L / N);//((i + 1) * L / N);
+                    y[iter] = ((j + 1) * L / N);
+                    z[iter] = ((k + 1) * L / N);
 
                     //System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
                     iter++;
@@ -131,9 +131,9 @@ public class MainLogic {
      */
     static public void timeModeling() throws IOException, InterruptedException {
 
-        double time = Math.pow(10, -6);
+        double time = Math.pow(10, -6);//размер шага по времени
         File file = new File("coords.txt");
-        int k = 0;//счётчик шагов
+        int k = 0;//счётчик шагов по времени
 
         for (double t = 0; t < time; t += dt) {
 
