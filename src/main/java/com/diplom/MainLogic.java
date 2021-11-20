@@ -1,8 +1,10 @@
 package com.diplom;
 
+import com.diplom.output.Output;
 import com.diplom.powerThreads.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.diplom.Data.*;
@@ -131,9 +133,12 @@ public class MainLogic {
      */
     static public void timeModeling() throws IOException, InterruptedException {
 
-        double time = Math.pow(10, -6);//размер шага по времени
         File file = new File("coords.txt");
-        int k = 0;//счётчик шагов по времени
+        File csvfile = new File("something.csv");
+        FileWriter fw = new FileWriter(csvfile, true);
+        fw.write("\"k\",\"Fx\",\"Fy\",\"Fz\",\n");
+        fw.close();
+        int k = 0;//счётчик шагов моделирования
 
         for (double t = 0; t < time; t += dt) {
 
@@ -182,11 +187,14 @@ public class MainLogic {
             //System.out.println("--------" + k + "---------");
 
             //Output.analyseConsoleOutput(Fx[5], Fy[5], Fz[5]);
-            Output.analyseConsoleOutput(Vx[100], Vy[100], Vz[100]);
+            //Output.analyseConsoleOutput(Vx[100], Vy[100], Vz[100]);
+            Output.consoleOutputForOnePoint(x, y, z, 325);
 
             k++;
-            if (k % 250 == 0) {
-                //Output.fileOutput(file, x, y, z);
+            if (k % 500 == 0) {
+                //Output.fileOutputForVlad(file, x, y, z);
+                //Output.txtForAnalyse(file, x, y, z);
+                //Output.csvForGraphics(csvfile, Fx, Fy, Fz, k);
             }
         }
     }

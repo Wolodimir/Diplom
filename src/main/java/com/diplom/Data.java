@@ -10,9 +10,11 @@ public class Data {
     /**
      * Константы
      * */
+    public final static double time = Math.pow(10, -6);
+    public static double dt = Math.pow(10, (-10));//шаг по времени
+
     public final static double m = 6.63 * (1e-24);//масса одной частицы аргона
     public final static int N = 10;//кол-во моделируемых частиц по одной оси
-    public static double dt = 2 * Math.pow(10, (-23));//шаг по времени
     public final static double KB = 1.38 * Math.pow(10, -23);//константа Больцмана
     public final static double EPS = 165 * (1e-23);
     public final static double SIG = 0.341 * (1e-9);//постоянные для потенциала Леннарда-Джонса
