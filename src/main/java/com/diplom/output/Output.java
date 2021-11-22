@@ -20,7 +20,7 @@ public class Output {
     public static void txtFor3D(File file, double[] x, double[] y, double[] z) throws IOException {
         FileWriter fw = new FileWriter(file, true);
         for (int i = 0; i < Math.pow(N, 3); i++) {
-            fw.write("{\"x\":\"" + (x[i] * 5E10) + "\",\"y\":\"" + (y[i] * 5E10) + "\",\"z\":\"" + (z[i] * 5E10) + "\"};");
+            fw.write("{\"x\":\"" + x[i] + "\",\"y\":\"" + y[i] + "\",\"z\":\"" + z[i] + "\"};");
         }
         fw.write("next");
         fw.close();

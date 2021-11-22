@@ -26,9 +26,9 @@ public class MainLogic {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < N; k++) {
-                    x[iter] = ((i + 1) * L / N);//((i + 1) * L / N);
-                    y[iter] = ((j + 1) * L / N);
-                    z[iter] = ((k + 1) * L / N);
+                    x[iter] = ((i + 1) * L / N) / 1.1;//((i + 1) * L / N);
+                    y[iter] = ((j + 1) * L / N) / 1.1;
+                    z[iter] = ((k + 1) * L / N) / 1.1;
 
                     //System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
                     iter++;
@@ -133,7 +133,7 @@ public class MainLogic {
      */
     static public void timeModeling() throws IOException, InterruptedException {
 
-        File file = new File("coords.txt");
+        File file = new File("/home/vladimir/hobby-dev/diplom-engine/data/coords.txt");
         File csvfile = new File("something.csv");
         FileWriter fw = new FileWriter(csvfile, true);
         fw.write("\"k\",\"Fx\",\"Fy\",\"Fz\",\n");
@@ -148,34 +148,38 @@ public class MainLogic {
 
             for (int i = 0; i < Math.pow(N, 3); i++) {
 
-                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * FastPowerFractional(dt, 2) / (2 * m));//новое положение частицы X
+                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));//новое положение частицы X
                 if (x[i] >= (L - R) && Vx[i] > 0) { //граничные условия по оси Х
                     Vx[i] = -Vx[i];
+                    x[i] = L - Math.random() * 10E-10;
                 } else if (x[i] <= R && Vx[i] < 0) {
                     Vx[i] = -Vx[i];
+                    x[i] = R + Math.random() * 10E-10;
                 }
 
-                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * FastPowerFractional(dt, 2) / (2 * m));
+                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * Math.pow(dt, 2) / (2 * m));
                 if (y[i] >= (L - R) && Vy[i] > 0) { //граничные условия по оси Y
                     Vy[i] = -Vy[i];
+                    y[i] = L - Math.random() * 10E-10;
                 } else if (y[i] <= R && Vy[i] < 0) {
-                    Fy[i] = 0;
                     Vy[i] = -Vy[i];
+                    y[i] = R + Math.random() * 10E-10;
                 }
 
-                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * FastPowerFractional(dt, 2) / (2 * m));
+                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * Math.pow(dt, 2) / (2 * m));
                 if (z[i] >= (L - R) && Vz[i] > 0) { //граничные условия по оси Z
                     Vz[i] = -Vz[i];
+                    z[i] = L - Math.random() * 10E-10;
                 } else if (z[i] <= R && Vz[i] < 0) {
-                    Fz[i] = 0;
                     Vz[i] = -Vz[i];
+                    z[i] = R + Math.random() * 10E-10;
                 }
             }
 
             //todo переключатель что-ли между разными методами вычисления сил
             //calcPowers();
-            //cutedCulcPowers();
-            threadingCulcPowers();
+            cutedCulcPowers();
+            //threadingCulcPowers();
 
             for (int i = 0; i < Math.pow(N, 3); i++) {//определение скорости частиц
                 Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
@@ -183,16 +187,15 @@ public class MainLogic {
                 Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
             }
 
-            //Output.consoleOutput(Fx, Fy, Fz);
-            //System.out.println("--------" + k + "---------");
+            //Output.consoleOutput(x, y, z);
+            System.out.println("--------" + k + "---------");
 
-            //Output.analyseConsoleOutput(Fx[5], Fy[5], Fz[5]);
             //Output.analyseConsoleOutput(Vx[100], Vy[100], Vz[100]);
-            Output.consoleOutputForOnePoint(x, y, z, 325);
+            //Output.consoleOutputForOnePoint(Fx, Fy, Fz, 0);
 
             k++;
-            if (k % 500 == 0) {
-                //Output.fileOutputForVlad(file, x, y, z);
+            if (k % 50 == 0) {
+                Output.txtFor3D(file, x, y, z);
                 //Output.txtForAnalyse(file, x, y, z);
                 //Output.csvForGraphics(csvfile, Fx, Fy, Fz, k);
             }
