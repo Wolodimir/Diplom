@@ -2,15 +2,11 @@ package com.diplom;
 
 public class Data {
 
-    /** Усечение при рассчёте сил */
-    public static double rasst = 4.0E-10;
-    //todo ПОЛНОСТЬЮ ПЕРЕСМОТРЕТЬ РАСЧЁТ ЭТОГО РАССТОЯНИЯ
-    //2.7 для 1000 частиц, 3.5 для 125;
-
     /**
      * Константы
      * */
-    public final static int N = 5;//кол-во моделируемых частиц по одной оси
+    public final static int N = 10;//кол-во моделируемых частиц по одной оси
+    public final static int length = (int) Math.pow(N, 3);
     public final static double time = Math.pow(10, -5);
     public static double dt = Math.pow(10, (-16));//шаг по времени
 
@@ -28,23 +24,23 @@ public class Data {
     /**
      * Массивы с координатами частиц
      * */
-    public static double[] x = new double[(int) Math.pow(N, 3)];
-    public static double[] y = new double[(int) Math.pow(N, 3)];
-    public static double[] z = new double[(int) Math.pow(N, 3)];
+    public static double[] x = new double[length];
+    public static double[] y = new double[length];
+    public static double[] z = new double[length];
 
     /**
      * Массивы с силами, действующими на частицы
      * */
-    public static double[] Fx = new double[(int) Math.pow(N, 3)];
-    public static double[] Fy = new double[(int) Math.pow(N, 3)];
-    public static double[] Fz = new double[(int) Math.pow(N, 3)];
+    public static double[] Fx = new double[length];
+    public static double[] Fy = new double[length];
+    public static double[] Fz = new double[length];
 
     /**
      * Массивы со скоростями частиц
      * */
-    public static double[] Vx = new double[(int) Math.pow(N, 3)];
-    public static double[] Vy = new double[(int) Math.pow(N, 3)];
-    public static double[] Vz = new double[(int) Math.pow(N, 3)];//массивы скоростей
+    public static double[] Vx = new double[length];
+    public static double[] Vy = new double[length];
+    public static double[] Vz = new double[length];//массивы скоростей
 
     /**
      * Массивы для промежуточных значений
@@ -56,14 +52,24 @@ public class Data {
     /**
      * Распределение массива с частицами по потокам, для вычисления сил
      * */
-    public static int i1 = (int) Math.pow(N, 3) / 10;
-    public static int i2 = (int) (Math.pow(N, 3) / 10) * 2;
-    public static int i3 = (int) (Math.pow(N, 3) / 10) * 3;
-    public static int i4 = (int) (Math.pow(N, 3) / 10) * 4;
-    public static int i5 = (int) (Math.pow(N, 3) / 10) * 5;
-    public static int i6 = (int) (Math.pow(N, 3) / 10) * 6;
-    public static int i7 = (int) (Math.pow(N, 3) / 10) * 7;
-    public static int i8 = (int) (Math.pow(N, 3) / 10) * 8;
-    public static int i9 = (int) (Math.pow(N, 3) / 10) * 9;
+    public static int i1 = length / 10;
+    public static int i2 = (length / 10) * 2;
+    public static int i3 = (length / 10) * 3;
+    public static int i4 = (length / 10) * 4;
+    public static int i5 = (length / 10) * 5;
+    public static int i6 = (length / 10) * 6;
+    public static int i7 = (length / 10) * 7;
+    public static int i8 = (length / 10) * 8;
+    public static int i9 = (length / 10) * 9;
+
+
+    /** Усечение при рассчёте сил */
+    public static double dist = 6.0E-10;
+    public static double gridDist = 2.2E-10;
+    public static int[] gridX = new int[length];
+    public static int[] gridY = new int[length];
+    public static int[] gridZ = new int[length];
+    //todo ПОЛНОСТЬЮ ПЕРЕСМОТРЕТЬ РАСЧЁТ ЭТОГО РАССТОЯНИЯ
+    //2.7 для 1000 частиц, 3.5 для 125;
 
 }

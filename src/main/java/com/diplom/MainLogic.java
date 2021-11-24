@@ -30,8 +30,43 @@ public class MainLogic {
                     y[iter] = ((j + 1) * L / N) / 1.1;
                     z[iter] = ((k + 1) * L / N) / 1.1;
 
-                    //System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
+                    System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
                     iter++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Нужно поделить чстицы по секторам, и считать только соседние секторы
+     * */
+    static public void gridCalcPowers() {
+
+        int iter = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < N; k++) {
+                    x[iter] = ((i + 1) * L / N) / 1.1;//((i + 1) * L / N);
+                    y[iter] = ((j + 1) * L / N) / 1.1;
+                    z[iter] = ((k + 1) * L / N) / 1.1;
+
+                    System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
+                    iter++;
+                }
+            }
+        }
+
+
+        double r;
+        double f0;
+        for (int i = 0; i < length; ++i) {
+            for (int j = 0; j < length; ++j) {
+                if (i != j) {
+                    r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
+                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
+                    Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
+                    Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
+                    Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
                 }
             }
         }
@@ -44,8 +79,8 @@ public class MainLogic {
         double r;
         double f0;
 
-        for (int i = 0; i < Math.pow(N, 3); ++i) {
-            for (int j = 0; j < Math.pow(N, 3); ++j) {
+        for (int i = 0; i < length; ++i) {
+            for (int j = 0; j < length; ++j) {
                 if (i != j) {
                     r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
                     f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
@@ -70,9 +105,9 @@ public class MainLogic {
         for (int i = 0; i < Math.pow(N, 3); ++i) {
             for (int j = 0; j < Math.pow(N, 3); ++j) {
                 if (i != j) {
-                    if ((abs(x[i] - x[j]) < rasst)
-                            && (abs(y[i] - y[j]) < rasst)
-                            && (abs(z[i] - z[j]) < rasst)) {
+                    if ((abs(x[i] - x[j]) < dist)
+                            && (abs(y[i] - y[j]) < dist)
+                            && (abs(z[i] - z[j]) < dist)) {
 
                         r = Math.sqrt(Math.pow((x[i] - x[j]), 2) + Math.pow((y[i] - y[j]), 2) + Math.pow((z[i] - z[j]), 2));
                         f0 = (double) 48 * (EPS / SIG) * (Math.pow((SIG / r), 13) - 0.5 * Math.pow((SIG / r), 7));
@@ -127,6 +162,35 @@ public class MainLogic {
     }
 
     /**
+     * Когда частицы достигают границ куба их нужно либо оттолкнуть, либо выпустить с другой стороны.
+     * */
+    static public void borderConditions(int i){
+        if (x[i] >= L && Vx[i] > 0) { //граничные условия по оси Х
+            Vx[i] = -Vx[i];
+            x[i] = R - Math.random() * 10E-12;
+        } else if (x[i] <= R && Vx[i] < 0) {
+            Vx[i] = -Vx[i];
+            x[i] = L + Math.random() * 10E-12;
+        }
+
+        if (y[i] >= L && Vy[i] > 0) { //граничные условия по оси Y
+            Vy[i] = -Vy[i];
+            y[i] = R - Math.random() * 10E-12;
+        } else if (y[i] <= R && Vy[i] < 0) {
+            Vy[i] = -Vy[i];
+            y[i] = L + Math.random() * 10E-12;
+        }
+
+        if (z[i] >= L && Vz[i] > 0) { //граничные условия по оси Z
+            Vz[i] = -Vz[i];
+            z[i] = R - Math.random() * 10E-12;
+        } else if (z[i] <= R && Vz[i] < 0) {
+            Vz[i] = -Vz[i];
+            z[i] = L + Math.random() * 10E-12;
+        }
+    }
+
+    /**
      * Большой метод, но делить его на несколько смысла нет.
      * Он вычисляет все величины по времени.
      * Все выбрасываемые исключения связанны с потоками вычислений и записи в файл.
@@ -146,58 +210,32 @@ public class MainLogic {
             FyPrev = Fy.clone();
             FzPrev = Fz.clone();
 
-            for (int i = 0; i < Math.pow(N, 3); i++) {
 
-                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));//новое положение частицы X
-                if (x[i] >= (L - R) && Vx[i] > 0) { //граничные условия по оси Х
-                    Vx[i] = -Vx[i];
-                    x[i] = L - Math.random() * 10E-10;
-                } else if (x[i] <= R && Vx[i] < 0) {
-                    Vx[i] = -Vx[i];
-                    x[i] = R + Math.random() * 10E-10;
-                }
+            for (int i = 0; i < length; i++) {
 
+                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));
                 y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * Math.pow(dt, 2) / (2 * m));
-                if (y[i] >= (L - R) && Vy[i] > 0) { //граничные условия по оси Y
-                    Vy[i] = -Vy[i];
-                    y[i] = L - Math.random() * 10E-10;
-                } else if (y[i] <= R && Vy[i] < 0) {
-                    Vy[i] = -Vy[i];
-                    y[i] = R + Math.random() * 10E-10;
-                }
-
                 z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * Math.pow(dt, 2) / (2 * m));
-                if (z[i] >= (L - R) && Vz[i] > 0) { //граничные условия по оси Z
-                    Vz[i] = -Vz[i];
-                    z[i] = L - Math.random() * 10E-10;
-                } else if (z[i] <= R && Vz[i] < 0) {
-                    Vz[i] = -Vz[i];
-                    z[i] = R + Math.random() * 10E-10;
-                }
+
+                borderConditions(i);
             }
 
             //todo переключатель что-ли между разными методами вычисления сил
-            //calcPowers();
-            cutedCulcPowers();
+            calcPowers();
+            //cutedCulcPowers();
             //threadingCulcPowers();
 
-            for (int i = 0; i < Math.pow(N, 3); i++) {//определение скорости частиц
+            for (int i = 0; i < length; i++) {//определение скорости частиц
                 Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
                 Vy[i] = Vy[i] + 0.5 * ((Fy[i] + FyPrev[i]) / m) * dt;
                 Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
             }
 
-            //Output.consoleOutput(x, y, z);
             System.out.println("--------" + k + "---------");
 
-            //Output.analyseConsoleOutput(Vx[100], Vy[100], Vz[100]);
-            //Output.consoleOutputForOnePoint(Fx, Fy, Fz, 0);
-
             k++;
-            if (k % 50 == 0) {
+            if (k % 100 == 0) {
                 Output.txtFor3D(file, x, y, z);
-                //Output.txtForAnalyse(file, x, y, z);
-                //Output.csvForGraphics(csvfile, Fx, Fy, Fz, k);
             }
         }
     }

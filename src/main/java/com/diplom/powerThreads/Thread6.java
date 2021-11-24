@@ -14,9 +14,9 @@ public class Thread6 extends Thread{
         for (; i < i6; ++i) {
             for (int j = i4; j < i7; ++j) {
                 if (i != j) {
-                    if ((abs(x[i] - x[j]) < rasst)
-                            && (abs(y[i] - y[j]) < rasst)
-                            && (abs(z[i] - z[j]) < rasst)) {
+                    if ((abs(x[i] - x[j]) < dist)
+                            && (abs(y[i] - y[j]) < dist)
+                            && (abs(z[i] - z[j]) < dist)) {
                         r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
                         f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
                         Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
