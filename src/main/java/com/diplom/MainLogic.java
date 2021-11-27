@@ -1,6 +1,5 @@
 package com.diplom;
 
-import com.diplom.output.Output;
 import com.diplom.powerThreads.*;
 
 import java.io.File;
@@ -30,7 +29,7 @@ public class MainLogic {
                     y[iter] = ((j + 1) * L / N) / 1.1;
                     z[iter] = ((k + 1) * L / N) / 1.1;
 
-                    System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
+                    //System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
                     iter++;
                 }
             }
@@ -38,24 +37,9 @@ public class MainLogic {
     }
 
     /**
-     * Нужно поделить чстицы по секторам, и считать только соседние секторы
+     * Нужно поделить частицы по секторам, и считать только соседние секторы
      * */
     static public void gridCalcPowers() {
-
-        int iter = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                for (int k = 0; k < N; k++) {
-                    x[iter] = ((i + 1) * L / N) / 1.1;//((i + 1) * L / N);
-                    y[iter] = ((j + 1) * L / N) / 1.1;
-                    z[iter] = ((k + 1) * L / N) / 1.1;
-
-                    System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
-                    iter++;
-                }
-            }
-        }
-
 
         double r;
         double f0;
@@ -231,11 +215,16 @@ public class MainLogic {
                 Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
             }
 
-            System.out.println("--------" + k + "---------");
+            //System.out.println("--------" + k + "---------");
+
+            if (k == 1000000){
+                System.out.println((System.currentTimeMillis() - hhhh));
+                break;
+            }
 
             k++;
             if (k % 100 == 0) {
-                Output.txtFor3D(file, x, y, z);
+                //Output.txtFor3D(file, x, y, z);
             }
         }
     }

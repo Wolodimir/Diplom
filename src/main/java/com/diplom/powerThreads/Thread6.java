@@ -12,7 +12,7 @@ public class Thread6 extends Thread{
         int i = i5;
 
         for (; i < i6; ++i) {
-            for (int j = i4; j < i7; ++j) {
+            for (int j = 0; j < length; ++j) {
                 if (i != j) {
                     if ((abs(x[i] - x[j]) < dist)
                             && (abs(y[i] - y[j]) < dist)

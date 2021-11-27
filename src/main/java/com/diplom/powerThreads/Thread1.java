@@ -11,7 +11,7 @@ public class Thread1 extends Thread {
         double f0;
 
         for (int i = 0; i < i1; ++i) {
-            for (int j = 0; j < i2; ++j) {
+            for (int j = 0; j < length; ++j) {
                 if (i != j) {
                     if ((abs(x[i] - x[j]) < dist)
                             && (abs(y[i] - y[j]) < dist)

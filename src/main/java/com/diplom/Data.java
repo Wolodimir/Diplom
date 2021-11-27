@@ -62,6 +62,8 @@ public class Data {
     public static int i8 = (length / 10) * 8;
     public static int i9 = (length / 10) * 9;
 
+    public static long hhhh = System.currentTimeMillis();
+
 
     /** Усечение при рассчёте сил */
     public static double dist = 6.0E-10;
