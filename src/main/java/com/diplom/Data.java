@@ -21,33 +21,6 @@ public class Data {
     public final static double V = Math.pow(N, 2) * (KB * T) / P;
     public final static double L = Math.pow(V, (double) 1 / 3); //сторона куба
 
-    /**
-     * Массивы с координатами частиц
-     * */
-    public static double[] x = new double[length];
-    public static double[] y = new double[length];
-    public static double[] z = new double[length];
-
-    /**
-     * Массивы с силами, действующими на частицы
-     * */
-    public static double[] Fx = new double[length];
-    public static double[] Fy = new double[length];
-    public static double[] Fz = new double[length];
-
-    /**
-     * Массивы со скоростями частиц
-     * */
-    public static double[] Vx = new double[length];
-    public static double[] Vy = new double[length];
-    public static double[] Vz = new double[length];//массивы скоростей
-
-    /**
-     * Массивы для промежуточных значений
-     * */
-    public static double[] FxPrev; //= new double[(int) Math.pow(Calc.N, 2)];
-    public static double[] FyPrev; //массивы для сохранения значений (используются в расчёте следующего шага)
-    public static double[] FzPrev;
 
     /**
      * Распределение массива с частицами по потокам, для вычисления сил
@@ -67,10 +40,14 @@ public class Data {
 
     /** Усечение при рассчёте сил */
     public static double dist = 6.0E-10;
-    public static double gridDist = 2.2E-10;
-    public static int[] gridX = new int[length];
-    public static int[] gridY = new int[length];
-    public static int[] gridZ = new int[length];
+    public static double gridDist = 3E-10;
+
+    public static Particle nullParticle = new Particle(0, 0, 0);
+    public static Particle[] particles = new Particle[length];
+
+    public static final int gridLength = N + 5;
+    public static Particle[][][] grid = new Particle[gridLength][gridLength][gridLength];
+
     //todo ПОЛНОСТЬЮ ПЕРЕСМОТРЕТЬ РАСЧЁТ ЭТОГО РАССТОЯНИЯ
     //2.7 для 1000 частиц, 3.5 для 125;
 

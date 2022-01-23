@@ -1,5 +1,7 @@
 package com.diplom.output;
 
+import com.diplom.Data;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,10 +19,10 @@ public class Output {
     /**
      * Вывод массивов в текстовый файл для отрисовки
      */
-    public static void txtFor3D(File file, double[] x, double[] y, double[] z) throws IOException {
+    public static void txtFor3D(File file) throws IOException {
         FileWriter fw = new FileWriter(file, true);
-        for (int i = 0; i < Math.pow(N, 3); i++) {
-            fw.write("{\"x\":\"" + x[i] + "\",\"y\":\"" + y[i] + "\",\"z\":\"" + z[i] + "\"};");
+        for (int i = 0; i < Data.length; i++) {
+            fw.write("{\"x\":\"" + particles[i].x + "\",\"y\":\"" +  particles[i].y + "\",\"z\":\"" +  particles[i].z + "\"};");
         }
         fw.write("next");
         fw.close();
@@ -30,7 +32,8 @@ public class Output {
      * Вывод массивов в текстовый файл для визуального анализа
      * и первичной проверки правильности данных
      */
-    public static void txtForAnalyse(File file, double[] x, double[] y, double[] z) throws IOException {
+    //@Deprecated
+    /*public static void txtForAnalyse(File file, double[] x, double[] y, double[] z) throws IOException {
         FileWriter fw = new FileWriter(file, true);
         for (int i = 0; i < Math.pow(N, 3); i++) {
             fw.write("{\"x\":\"" + x[i] + "\",\"y\":\"" + y[i] + "\",\"z\":\"" + z[i] + "\"};" + "\n");
@@ -59,7 +62,7 @@ public class Output {
 
     public static void analyseConsoleOutput(double x, double y, double z) {
         System.out.println(x + "      " + y + "      " + z);
-    }
+    }*/
 
 
 }

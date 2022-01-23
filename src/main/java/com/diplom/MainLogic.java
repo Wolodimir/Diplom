@@ -1,9 +1,9 @@
 package com.diplom;
 
+import com.diplom.output.Output;
 import com.diplom.powerThreads.*;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.diplom.Data.*;
@@ -25,32 +25,21 @@ public class MainLogic {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < N; k++) {
-                    x[iter] = ((i + 1) * L / N) / 1.1;//((i + 1) * L / N);
-                    y[iter] = ((j + 1) * L / N) / 1.1;
-                    z[iter] = ((k + 1) * L / N) / 1.1;
+                    particles[iter] = new Particle(
+                            ((i + 1) * L / N) / 1.1,
+                            ((j + 1) * L / N) / 1.1,
+                            ((k + 1) * L / N) / 1.1);
 
-                    //System.out.println("номер --- " + iter + "     значение   " + x[iter] + "      " + y[iter] + "      " + z[iter]);
+                    //System.out.println("номер --- " + iter + "     значение   " + particles[iter].x + "      " + particles[iter].y + "      " + particles[iter].z);
                     iter++;
                 }
             }
         }
-    }
 
-    /**
-     * Нужно поделить частицы по секторам, и считать только соседние секторы
-     * */
-    static public void gridCalcPowers() {
-
-        double r;
-        double f0;
-        for (int i = 0; i < length; ++i) {
-            for (int j = 0; j < length; ++j) {
-                if (i != j) {
-                    r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
-                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
-                    Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
-                    Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
-                    Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
+        for (int i = 0; i < gridLength; i++) {
+            for (int j = 0; j < gridLength; j++) {
+                for (int k = 0; k < gridLength; k++) {
+                    grid[i][j][k] = new Particle(0, 0, 0);
                 }
             }
         }
@@ -66,44 +55,13 @@ public class MainLogic {
         for (int i = 0; i < length; ++i) {
             for (int j = 0; j < length; ++j) {
                 if (i != j) {
-                    r = Math.sqrt(FastPowerFractional((x[i] - x[j]), 2) + FastPowerFractional((y[i] - y[j]), 2) + FastPowerFractional((z[i] - z[j]), 2));
+                    r = Math.sqrt(FastPowerFractional((particles[i].x - particles[j].x), 2) + FastPowerFractional((particles[i].y - particles[j].y), 2) + FastPowerFractional((particles[i].z - particles[j].z), 2));
                     f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
-                    Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
-                    Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
-                    Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
+                    particles[i].Fx = particles[i].Fx + (f0 * (particles[i].x - particles[j].x) / r);
+                    particles[i].Fy = particles[i].Fy + (f0 * (particles[i].y - particles[j].y) / r);
+                    particles[i].Fz = particles[i].Fz + (f0 * (particles[i].z - particles[j].z) / r);
                 }
             }
-        }
-    }
-
-    /**
-     * Вне многопоточности имеет смысл только если <= 5 частиц остальное слишком медленно.
-     * Следует проверять вычисленные значения, так как результат усекает частицы дальше
-     * определённого расстояния, которое я выбираю весьма субъективно
-     */
-    static public void cutedCulcPowers() {
-        double r;
-        double f0;
-        int h = 0;
-
-        for (int i = 0; i < Math.pow(N, 3); ++i) {
-            for (int j = 0; j < Math.pow(N, 3); ++j) {
-                if (i != j) {
-                    if ((abs(x[i] - x[j]) < dist)
-                            && (abs(y[i] - y[j]) < dist)
-                            && (abs(z[i] - z[j]) < dist)) {
-
-                        r = Math.sqrt(Math.pow((x[i] - x[j]), 2) + Math.pow((y[i] - y[j]), 2) + Math.pow((z[i] - z[j]), 2));
-                        f0 = (double) 48 * (EPS / SIG) * (Math.pow((SIG / r), 13) - 0.5 * Math.pow((SIG / r), 7));
-                        Fx[i] = Fx[i] + (f0 * (x[i] - x[j]) / r);
-                        Fy[i] = Fy[i] + (f0 * (y[i] - y[j]) / r);
-                        Fz[i] = Fz[i] + (f0 * (z[i] - z[j]) / r);
-                        ++h;
-                    }
-                }
-            }
-            //System.out.println(++h);
-            h = 0;
         }
     }
 
@@ -146,31 +104,102 @@ public class MainLogic {
     }
 
     /**
+     * Метод вычисления сил. Основой данного метода является алгоритм "Статическая сетка".
+     * Координаты частиц на каждом шагу распределяются в трёхмерную матрицу в зависимости от координат,
+     * для каждый частицы проводится проверка на наличие соседних элементов, и сооветствующие расчёты.
+     * */
+    static public void staticGrid() {
+
+        for (int i = 0; i < gridLength; i++) {
+            for (int j = 0; j < gridLength; j++) {
+                for (int k = 0; k < gridLength; k++) {
+                    grid[i][j][k] = nullParticle;
+                }
+            }
+        }
+
+        int q = 0;
+
+        for (int i = 0; i < length; i++) {
+            int x = (int) (particles[i].x / gridDist);
+            int y = (int) (particles[i].y / gridDist);
+            int z = (int) (particles[i].z / gridDist);
+            q++;
+            grid[x][y][z] = particles[i];
+        }
+
+        double r;
+        double f0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < N; k++) {
+                    /** 1 частица
+                     * Проверяется матрица вокруг неё
+                     * */
+
+
+                    for (int i1 = i - 1; i1 < i + 1; i1++) {
+                        for (int j1 = j - 1; j1 < j + 1; j1++) {
+                            for (int k1 = k - 1; k1 < k + 1; k1++) {
+
+                                if (i == i1 && j == j1 && k == k1)
+                                    continue;
+
+                                try {
+                                    if (grid[i1][j1][k1] == nullParticle)
+                                        continue;
+
+                                    r = Math.sqrt(FastPowerFractional((grid[i][j][k].x - grid[i1][j1][k1].x), 2)
+                                            + FastPowerFractional((grid[i][j][k].y - grid[i1][j1][k1].y), 2)
+                                            + FastPowerFractional((grid[i][j][k].z - grid[i1][j1][k1].z), 2));
+
+                                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
+                                    grid[i][j][k].Fx = grid[i][j][k].Fx + (f0 * (grid[i][j][k].x - grid[i1][j1][k1].x) / r);
+                                    grid[i][j][k].Fy = grid[i][j][k].Fy + (f0 * (grid[i][j][k].y - grid[i1][j1][k1].y) / r);
+                                    grid[i][j][k].Fz = grid[i][j][k].Fz + (f0 * (grid[i][j][k].z - grid[i1][j1][k1].z) / r);
+                                } catch (Exception ignored) {
+                                    /**
+                                     * Ошибки связаны с тем, что мы выходим за рамки матрицы, для крайних частиц.
+                                     * Это позволяет сделать алгоритм целостным, и не портить рассчёты.
+                                     * Возможно, удастся найти способ избеганий таких проблем.
+                                     * */
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+
+    /**
      * Когда частицы достигают границ куба их нужно либо оттолкнуть, либо выпустить с другой стороны.
      * */
     static public void borderConditions(int i){
-        if (x[i] >= L && Vx[i] > 0) { //граничные условия по оси Х
-            Vx[i] = -Vx[i];
-            x[i] = R - Math.random() * 10E-12;
-        } else if (x[i] <= R && Vx[i] < 0) {
-            Vx[i] = -Vx[i];
-            x[i] = L + Math.random() * 10E-12;
+        if (particles[i].x >= L && particles[i].Vx > 0) { //граничные условия по оси Х
+            particles[i].Vx = -particles[i].Vx;
+            particles[i].x = R - Math.random() * 10E-12;
+        } else if (particles[i].x <= R && particles[i].Vx < 0) {
+            particles[i].Vx = -particles[i].Vx;
+            particles[i].x = L + Math.random() * 10E-12;
         }
 
-        if (y[i] >= L && Vy[i] > 0) { //граничные условия по оси Y
-            Vy[i] = -Vy[i];
-            y[i] = R - Math.random() * 10E-12;
-        } else if (y[i] <= R && Vy[i] < 0) {
-            Vy[i] = -Vy[i];
-            y[i] = L + Math.random() * 10E-12;
+        if (particles[i].y >= L && particles[i].Vy > 0) { //граничные условия по оси Y
+            particles[i].Vy = -particles[i].Vy;
+            particles[i].y = R - Math.random() * 10E-12;
+        } else if (particles[i].y <= R && particles[i].Vy < 0) {
+            particles[i].Vy = -particles[i].Vy;
+            particles[i].y = L + Math.random() * 10E-12;
         }
 
-        if (z[i] >= L && Vz[i] > 0) { //граничные условия по оси Z
-            Vz[i] = -Vz[i];
-            z[i] = R - Math.random() * 10E-12;
-        } else if (z[i] <= R && Vz[i] < 0) {
-            Vz[i] = -Vz[i];
-            z[i] = L + Math.random() * 10E-12;
+        if (particles[i].z >= L && particles[i].Vz > 0) { //граничные условия по оси Z
+            particles[i].Vz = -particles[i].Vz;
+            particles[i].z = R - Math.random() * 10E-12;
+        } else if (particles[i].z <= R && particles[i].Vz < 0) {
+            particles[i].Vz = -particles[i].Vz;
+            particles[i].z = L + Math.random() * 10E-12;
         }
     }
 
@@ -182,49 +211,50 @@ public class MainLogic {
     static public void timeModeling() throws IOException, InterruptedException {
 
         File file = new File("/home/vladimir/hobby-dev/diplom-engine/data/coords.txt");
-        File csvfile = new File("something.csv");
-        FileWriter fw = new FileWriter(csvfile, true);
-        fw.write("\"k\",\"Fx\",\"Fy\",\"Fz\",\n");
-        fw.close();
+
         int k = 0;//счётчик шагов моделирования
 
         for (double t = 0; t < time; t += dt) {
 
-            FxPrev = Fx.clone();
-            FyPrev = Fy.clone();
-            FzPrev = Fz.clone();
-
+            for (int i = 0; i < length; i++) {
+                particles[i].FxPrev = particles[i].Fx;
+                particles[i].FyPrev = particles[i].Fy;
+                particles[i].FzPrev = particles[i].Fz;
+            }
 
             for (int i = 0; i < length; i++) {
 
-                x[i] = x[i] + Vx[i] * dt + (FxPrev[i] * Math.pow(dt, 2) / (2 * m));
-                y[i] = y[i] + Vy[i] * dt + (FyPrev[i] * Math.pow(dt, 2) / (2 * m));
-                z[i] = z[i] + Vz[i] * dt + (FzPrev[i] * Math.pow(dt, 2) / (2 * m));
+                particles[i].x = particles[i].x + particles[i].Vx * dt + (particles[i].FxPrev * Math.pow(dt, 2) / (2 * m));
+                particles[i].y = particles[i].y + particles[i].Vy * dt + (particles[i].FyPrev * Math.pow(dt, 2) / (2 * m));
+                particles[i].z = particles[i].z + particles[i].Vz * dt + (particles[i].FzPrev * Math.pow(dt, 2) / (2 * m));
 
                 borderConditions(i);
             }
 
-            //todo переключатель что-ли между разными методами вычисления сил
-            calcPowers();
-            //cutedCulcPowers();
-            //threadingCulcPowers();
+
+            staticGrid();
+            //calcPowers();
 
             for (int i = 0; i < length; i++) {//определение скорости частиц
-                Vx[i] = Vx[i] + 0.5 * ((Fx[i] + FxPrev[i]) / m) * dt;
-                Vy[i] = Vy[i] + 0.5 * ((Fy[i] + FyPrev[i]) / m) * dt;
-                Vz[i] = Vz[i] + 0.5 * ((Fz[i] + FzPrev[i]) / m) * dt;
+                particles[i].Vx = particles[i].Vx + 0.5 * ((particles[i].Fx + particles[i].FxPrev) / m) * dt;
+                particles[i].Vy = particles[i].Vy + 0.5 * ((particles[i].Fy + particles[i].FyPrev) / m) * dt;
+                particles[i].Vz = particles[i].Vz + 0.5 * ((particles[i].Fz + particles[i].FzPrev) / m) * dt;
             }
 
-            //System.out.println("--------" + k + "---------");
+            System.out.println("--------" + k + "---------");
 
-            if (k == 1000000){
+            k = k + 1;
+
+            //System.out.println(particles[123].Vx + "    " + particles[123].Vy + "    " + particles[123].Vz);
+            //System.out.println(particles[123].Fx + "    " + particles[123].Fy + "    " + particles[123].Fz);
+            //System.out.println(particles[123].x + "    " + particles[123].y + "    " + particles[123].z);
+
+            if (k == 1000000) {
                 System.out.println((System.currentTimeMillis() - hhhh));
                 break;
             }
-
-            k++;
             if (k % 100 == 0) {
-                //Output.txtFor3D(file, x, y, z);
+                Output.txtFor3D(file);
             }
         }
     }
