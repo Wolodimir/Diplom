@@ -124,9 +124,12 @@ public class MainLogic {
             int x = (int) (particles[i].x / gridDist);
             int y = (int) (particles[i].y / gridDist);
             int z = (int) (particles[i].z / gridDist);
-            q++;
+            if(grid[x][y][z] != nullParticle){
+                q++;
+            }
             grid[x][y][z] = particles[i];
         }
+        System.out.println(q);
 
         double r;
         double f0;
@@ -233,7 +236,6 @@ public class MainLogic {
 
 
             staticGrid();
-            //calcPowers();
 
             for (int i = 0; i < length; i++) {//определение скорости частиц
                 particles[i].Vx = particles[i].Vx + 0.5 * ((particles[i].Fx + particles[i].FxPrev) / m) * dt;
@@ -249,8 +251,8 @@ public class MainLogic {
             //System.out.println(particles[123].Fx + "    " + particles[123].Fy + "    " + particles[123].Fz);
             //System.out.println(particles[123].x + "    " + particles[123].y + "    " + particles[123].z);
 
-            if (k == 1000000) {
-                System.out.println((System.currentTimeMillis() - hhhh));
+            if (k == 100000) {
+                System.out.println("Время выполнения: " + (System.currentTimeMillis() - hhhh));
                 break;
             }
             if (k % 100 == 0) {

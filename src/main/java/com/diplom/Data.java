@@ -40,7 +40,8 @@ public class Data {
 
     /** Усечение при рассчёте сил */
     public static double dist = 6.0E-10;
-    public static double gridDist = 3E-10;
+    //TODO!!!!!
+    public static double gridDist = 2E-10;
 
     public static Particle nullParticle = new Particle(0, 0, 0);
     public static Particle[] particles = new Particle[length];
