@@ -19,12 +19,24 @@ public class Output {
     /**
      * Вывод массивов в текстовый файл для отрисовки
      */
-    public static void txtFor3D(File file) throws IOException {
+    public static void txtFor3D(File file, int iterator) throws IOException {
+        FileWriter fw = new FileWriter(file, true);
+        fw.write("step" + iterator + ": [");
+        for (int i = 0; i < Data.length; i++) {
+            fw.write("{\"x\":\"" + particles[i].x + "\",\"y\":\"" +
+                    particles[i].y + "\",\"z\":\"" + particles[i].z + "\"},");
+        }
+        fw.write("], \n");
+        //fw.write("next");
+        fw.close();
+    }
+
+    public static void csvForGraphics(File file, int k) throws IOException {
         FileWriter fw = new FileWriter(file, true);
         for (int i = 0; i < Data.length; i++) {
-            fw.write("{\"x\":\"" + particles[i].x + "\",\"y\":\"" +  particles[i].y + "\",\"z\":\"" +  particles[i].z + "\"};");
+            fw.write(particles[i].x + "," + particles[i].y + "," + particles[i].z + "\n");
         }
-        fw.write("next");
+        fw.write("step \n");
         fw.close();
     }
 

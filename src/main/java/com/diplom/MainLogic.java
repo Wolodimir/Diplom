@@ -4,6 +4,7 @@ import com.diplom.output.Output;
 import com.diplom.powerThreads.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.diplom.Data.*;
@@ -129,7 +130,7 @@ public class MainLogic {
             }
             grid[x][y][z] = particles[i];
         }
-        System.out.println(q);
+        //System.out.println(q);
 
         double r;
         double f0;
@@ -213,7 +214,7 @@ public class MainLogic {
      */
     static public void timeModeling() throws IOException, InterruptedException {
 
-        File file = new File("/home/vladimir/hobby-dev/diplom-engine/data/coords.txt");
+        File file = new File("/home/vladimir/hobby-dev/particles-engine/files/coords.csv");
 
         int k = 0;//счётчик шагов моделирования
 
@@ -236,6 +237,7 @@ public class MainLogic {
 
 
             staticGrid();
+            //calcPowers();
 
             for (int i = 0; i < length; i++) {//определение скорости частиц
                 particles[i].Vx = particles[i].Vx + 0.5 * ((particles[i].Fx + particles[i].FxPrev) / m) * dt;
@@ -251,12 +253,14 @@ public class MainLogic {
             //System.out.println(particles[123].Fx + "    " + particles[123].Fy + "    " + particles[123].Fz);
             //System.out.println(particles[123].x + "    " + particles[123].y + "    " + particles[123].z);
 
-            if (k == 100000) {
+            if (k % 1 == 0) {
+                //Output.txtFor3D(file, k);
+                Output.csvForGraphics(file, k);
+            }
+
+            if (k == 1000) {
                 System.out.println("Время выполнения: " + (System.currentTimeMillis() - hhhh));
                 break;
-            }
-            if (k % 100 == 0) {
-                Output.txtFor3D(file);
             }
         }
     }
