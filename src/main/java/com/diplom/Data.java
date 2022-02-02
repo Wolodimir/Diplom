@@ -14,7 +14,6 @@ public class Data {
     public final static double KB = 1.38 * Math.pow(10, -23);//константа Больцмана
     public final static double EPS = 165 * (1e-23);
     public final static double SIG = 0.341 * (1e-9);//постоянные для потенциала Леннарда-Джонса
-    public final static double R = SIG / 3;
     public final static int T = 120; //средняя температура
     public final static double P = 11 * Math.pow(10, 6); //желаемое давление
     //final static double V = Math.pow(N, (2 * KB * T) / P); //объем куба
@@ -43,7 +42,7 @@ public class Data {
     //TODO!!!!!
     public static double gridDist = 3E-10;
 
-    public static Particle nullParticle = new Particle(0, 0, 0);
+    public static Particle nullParticle = new Particle(0, 0, 0, 0, 0, 0);
     public static Particle[] particles = new Particle[length];
 
     public static final int gridLength = N + 5;

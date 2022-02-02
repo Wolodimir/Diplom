@@ -18,10 +18,14 @@ public class Particle {
     public double FyPrev;
     public double FzPrev;
 
-    public Particle(double x, double y, double z) {
+    public Particle(double x, double y, double z,
+                    double Vx, double Vy, double Vz) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.Vx = Vx;
+        this.Vy = Vy;
+        this.Vz = Vz;
     }
 
 }
