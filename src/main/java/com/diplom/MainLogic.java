@@ -31,9 +31,9 @@ public class MainLogic {
                             ((i + 1) * L / N) / 1.1,
                             ((j + 1) * L / N) / 1.1,
                             ((k + 1) * L / N) / 1.1,
-                            Math.random() * 10E3/2 - 10E3,
-                            Math.random() * 10E3/2 - 10E3,
-                            Math.random() * 10E3/2 - 10E3);
+                            Math.random() * 10E3 / 2 - 10E3,
+                            Math.random() * 10E3 / 2 - 10E3,
+                            Math.random() * 10E3 / 2 - 10E3);
 
                     //System.out.println("номер --- " + iter + "     значение   " + particles[iter].x + "      " + particles[iter].y + "      " + particles[iter].z);
                     iter++;
@@ -41,10 +41,25 @@ public class MainLogic {
             }
         }
 
+        /*for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                for (int k = 0; k < N; k++) {
+                    if (i == 0 || j == 0 || k == 0) {
+                        particles[iter] = new Particle(
+                                i * 10E-11,
+                                j * 10E-11,
+                                k * 10E-11);
+                        iter++;
+                    }
+                    //System.out.println("номер --- " + iter + "     значение   " + particles[iter].x + "      " + particles[iter].y + "      " + particles[iter].z);
+                }
+            }
+        }*/
+
         for (int i = 0; i < gridLength; i++) {
             for (int j = 0; j < gridLength; j++) {
                 for (int k = 0; k < gridLength; k++) {
-                    grid[i][j][k] = new Particle(0, 0, 0, 0, 0, 0);
+                    grid[i][j][k] = nullParticle;
                 }
             }
         }
@@ -146,7 +161,7 @@ public class MainLogic {
                     /** 1 частица
                      * Проверяется матрица вокруг неё
                      * */
-
+                    //todo нужна проверка на то, что сама ячейка содержит nullParticle
 
                     for (int i1 = i - 1; i1 < i + 1; i1++) {
                         for (int j1 = j - 1; j1 < j + 1; j1++) {
@@ -264,7 +279,7 @@ public class MainLogic {
                 Output.csvForGraphics(file, k);
             }
 
-            if (k == 1000) {
+            if (k == 5000) {
                 System.out.println("Время выполнения: " + (System.currentTimeMillis() - hhhh));
                 break;
             }
