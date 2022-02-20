@@ -40,6 +40,15 @@ public class Output {
         fw.close();
     }
 
+    public static void PowerForGraphics(File file, int k) throws IOException {
+        FileWriter fw = new FileWriter(file, true);
+        for (int i = 0; i < Data.length; i++) {
+            fw.write(particles[i].x + "," + particles[i].y + "," + particles[i].z + "\n");
+        }
+        fw.write("step \n");
+        fw.close();
+    }
+
     /**
      * Вывод массивов в текстовый файл для визуального анализа
      * и первичной проверки правильности данных

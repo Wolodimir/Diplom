@@ -17,7 +17,7 @@ public class Data {
     public final static int T = 120; //средняя температура
     public final static double P = 11 * Math.pow(10, 6); //желаемое давление
     //final static double V = Math.pow(N, (2 * KB * T) / P); //объем куба
-    public final static double V = Math.pow(N, 2) * (KB * T) / P;
+    public final static double V = Math.pow(10, 2) * (KB * T) / P;//Math.pow(N, 2) * (KB * T) / P;
     public final static double L = Math.pow(V, (double) 1 / 3); //сторона куба
 
 
