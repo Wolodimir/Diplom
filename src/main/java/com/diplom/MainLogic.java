@@ -3,9 +3,7 @@ package com.diplom;
 import com.diplom.output.Output;
 import com.diplom.powerThreads.*;
 
-import javax.naming.NameNotFoundException;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.diplom.Data.*;
@@ -35,8 +33,6 @@ public class MainLogic {
                             Math.random() * 10E3 / 2 - 10E3,
                             Math.random() * 10E3 / 2 - 10E3
                     );
-
-                    //System.out.println("номер --- " + iter + "     значение   " + particles[iter].x + "      " + particles[iter].y + "      " + particles[iter].z);
                     iter++;
                 }
             }
@@ -210,34 +206,22 @@ public class MainLogic {
      * Когда частицы достигают границ куба их нужно либо оттолкнуть, либо выпустить с другой стороны.
      */
     static public void borderConditions(int i) {
-        if (particles[i].x >= L /*&& particles[i].Vx > 0*/) { //граничные условия по оси Х
-            //particles[i].Vx = -particles[i].Vx;
-            particles[i].x = 0 + Math.random() * 10E-12;
-            //particles[i].x = L - Math.random() * 10E-12;// - Math.random() * 10E-12 * 30;
-        } else if (particles[i].x <= 0 /*&& particles[i].Vx < 0*/) {
-            particles[i].x = L - Math.random() * 10E-12;
-            //particles[i].Vx = -particles[i].Vx;
-            //particles[i].x = 0 + 10E-15 + Math.random() * 10E-12;// + Math.random() * 10E-12 * 30;
+        if (particles[i].x >= L) { //граничные условия по оси Х
+            particles[i].x = 10E-12;
+        } else if (particles[i].x <= 0) {
+            particles[i].x = L;
         }
 
-        if (particles[i].y >= L /*&& particles[i].Vy > 0*/) { //граничные условия по оси Y
-            particles[i].y = 0 + Math.random() * 10E-12;
-            //particles[i].Vy = -particles[i].Vy;
-            //particles[i].y = L - Math.random() * 10E-12;//- Math.random() * 10E-12 * 30;
-        } else if (particles[i].y <= 0 /*&& particles[i].Vy < 0*/) {
-            particles[i].y = L - Math.random() * 10E-12;
-            //particles[i].Vy = -particles[i].Vy;
-            //particles[i].y = 0 + 10E-15 + Math.random() * 10E-12;// + Math.random() * 10E-12 * 30;
+        if (particles[i].y >= L) { //граничные условия по оси Y
+            particles[i].y = 10E-12;
+        } else if (particles[i].y <= 0) {
+            particles[i].y = L;
         }
 
-        if (particles[i].z >= L /*&& particles[i].Vz > 0*/) { //граничные условия по оси Z
-            particles[i].z = 0 + Math.random() * 10E-12;
-            //particles[i].Vz = -particles[i].Vz;
-            //particles[i].z = L - Math.random() * 10E-12;//- Math.random() * 10E-12 * 30;
-        } else if (particles[i].z <= 0 /*&& particles[i].Vz < 0*/) {
-            particles[i].z = L - Math.random() * 10E-12;
-            //particles[i].Vz = -particles[i].Vz;
-            //particles[i].z = 0 + 10E-15 + Math.random() * 10E-12;//+ Math.random() * 10E-12 * 30;
+        if (particles[i].z >= L) { //граничные условия по оси Z
+            particles[i].z = 10E-12;
+        } else if (particles[i].z <= 0) {
+            particles[i].z = L;
         }
     }
 
@@ -283,16 +267,12 @@ public class MainLogic {
 
             k = k + 1;
 
-            //System.out.println(particles[123].Vx + "    " + particles[123].Vy + "    " + particles[123].Vz);
-            //System.out.println(particles[123].Fx + "    " + particles[123].Fy + "    " + particles[123].Fz);
-            //System.out.println(particles[123].x + "    " + particles[123].y + "    " + particles[123].z);
-
             if (k % 1 == 0) {
                 //Output.txtFor3D(file, k);
                 Output.csvForGraphics(file, k);
             }
 
-            if (k == 5000) {
+            if (k == 50000) {
                 System.out.println("Время выполнения: " + (System.currentTimeMillis() - hhhh));
                 break;
             }
