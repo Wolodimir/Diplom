@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import static com.diplom.Data.*;
 import static com.diplom.ExternalFunctions.*;
+import static java.lang.Math.*;
 
 public class MainLogic {
 
@@ -67,6 +68,9 @@ public class MainLogic {
      */
     static public void calcPowers() {
         double r;
+        double Rp1;
+        double Rp2;
+        double Rass;
         double f0;
 
         for (int i = 0; i < length; ++i) {
@@ -78,13 +82,34 @@ public class MainLogic {
         for (int i = 0; i < length; ++i) {
             for (int j = 0; j < length; ++j) {
                 if (i != j) {
-                    r = Math.sqrt(FastPowerFractional((particles[i].x - particles[j].x), 2)
-                            + FastPowerFractional((particles[i].y - particles[j].y), 2)
-                            + FastPowerFractional((particles[i].z - particles[j].z), 2));
-                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
-                    particles[i].Fx = particles[i].Fx + (f0 * (particles[i].x - particles[j].x) / r);
-                    particles[i].Fy = particles[i].Fy + (f0 * (particles[i].y - particles[j].y) / r);
-                    particles[i].Fz = particles[i].Fz + (f0 * (particles[i].z - particles[j].z) / r);
+                    r = sqrt(pow((particles[i].x - particles[j].x), 2)
+                            + pow((particles[i].y - particles[j].y), 2)
+                            + pow((particles[i].z - particles[j].z), 2));
+
+                    Rp1 = sqrt(
+                            FPF(min(abs(0 - particles[i].x), abs(particles[i].x - L)), 2)
+                            + FPF(min(abs(0 - particles[i].y), abs(particles[i].y - L)), 2)
+                            + FPF(min(abs(0 - particles[i].z), abs(particles[i].z - L)), 2)
+                    );
+
+                    Rp2 = sqrt(
+                            FPF(min(abs(0 - particles[j].x), abs(particles[j].x - L)), 2)
+                            + FPF(min(abs(0 - particles[j].y), abs(particles[j].y - L)), 2)
+                            + FPF(min(abs(0 - particles[j].z), abs(particles[j].z - L)), 2)
+                    );
+
+                    Rass = Rp1 + Rp2;
+                    if (r < Rass) {
+                        f0 = (double) 48 * (EPS / SIG) * (FPF((SIG / r), 13) - 0.5 * FPF((SIG / r), 7));
+                        particles[i].Fx = particles[i].Fx + (f0 * (particles[i].x - particles[j].x) / r);
+                        particles[i].Fy = particles[i].Fy + (f0 * (particles[i].y - particles[j].y) / r);
+                        particles[i].Fz = particles[i].Fz + (f0 * (particles[i].z - particles[j].z) / r);
+                    } else if(r > Rass) {
+                        f0 = (double) 48 * (EPS / SIG) * (FPF((SIG / Rass), 13) - 0.5 * FPF((SIG / Rass), 7));
+                        particles[i].Fx = particles[i].Fx + (f0 * (particles[i].x - particles[j].x) / Rass);
+                        particles[i].Fy = particles[i].Fy + (f0 * (particles[i].y - particles[j].y) / Rass);
+                        particles[i].Fz = particles[i].Fz + (f0 * (particles[i].z - particles[j].z) / Rass);
+                    }
                 }
             }
         }
@@ -177,11 +202,11 @@ public class MainLogic {
                                     if (grid[i1][j1][k1] == nullParticle)
                                         continue;
 
-                                    r = Math.sqrt(FastPowerFractional((grid[i][j][k].x - grid[i1][j1][k1].x), 2)
-                                            + FastPowerFractional((grid[i][j][k].y - grid[i1][j1][k1].y), 2)
-                                            + FastPowerFractional((grid[i][j][k].z - grid[i1][j1][k1].z), 2));
+                                    r = Math.sqrt(FPF((grid[i][j][k].x - grid[i1][j1][k1].x), 2)
+                                            + FPF((grid[i][j][k].y - grid[i1][j1][k1].y), 2)
+                                            + FPF((grid[i][j][k].z - grid[i1][j1][k1].z), 2));
 
-                                    f0 = (double) 48 * (EPS / SIG) * (FastPowerFractional((SIG / r), 13) - 0.5 * FastPowerFractional((SIG / r), 7));
+                                    f0 = (double) 48 * (EPS / SIG) * (FPF((SIG / r), 13) - 0.5 * FPF((SIG / r), 7));
                                     grid[i][j][k].Fx = grid[i][j][k].Fx + (f0 * (grid[i][j][k].x - grid[i1][j1][k1].x) / r);
                                     grid[i][j][k].Fy = grid[i][j][k].Fy + (f0 * (grid[i][j][k].y - grid[i1][j1][k1].y) / r);
                                     grid[i][j][k].Fz = grid[i][j][k].Fz + (f0 * (grid[i][j][k].z - grid[i1][j1][k1].z) / r);
@@ -209,19 +234,19 @@ public class MainLogic {
         if (particles[i].x >= L) { //граничные условия по оси Х
             particles[i].x = 10E-12;
         } else if (particles[i].x <= 0) {
-            particles[i].x = L;
+            particles[i].x = L - 10E-12;
         }
 
         if (particles[i].y >= L) { //граничные условия по оси Y
             particles[i].y = 10E-12;
         } else if (particles[i].y <= 0) {
-            particles[i].y = L;
+            particles[i].y = L - 10E-12;
         }
 
         if (particles[i].z >= L) { //граничные условия по оси Z
             particles[i].z = 10E-12;
         } else if (particles[i].z <= 0) {
-            particles[i].z = L;
+            particles[i].z = L - 10E-12;
         }
     }
 
@@ -246,9 +271,9 @@ public class MainLogic {
 
             for (int i = 0; i < length; i++) {
 
-                particles[i].x = particles[i].x + particles[i].Vx * dt + (particles[i].FxPrev * Math.pow(dt, 2) / (2 * m));
-                particles[i].y = particles[i].y + particles[i].Vy * dt + (particles[i].FyPrev * Math.pow(dt, 2) / (2 * m));
-                particles[i].z = particles[i].z + particles[i].Vz * dt + (particles[i].FzPrev * Math.pow(dt, 2) / (2 * m));
+                particles[i].x = particles[i].x + particles[i].Vx * dt + (particles[i].FxPrev * pow(dt, 2) / (2 * m));
+                particles[i].y = particles[i].y + particles[i].Vy * dt + (particles[i].FyPrev * pow(dt, 2) / (2 * m));
+                particles[i].z = particles[i].z + particles[i].Vz * dt + (particles[i].FzPrev * pow(dt, 2) / (2 * m));
 
                 borderConditions(i);
             }

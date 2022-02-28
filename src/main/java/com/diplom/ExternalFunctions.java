@@ -26,7 +26,7 @@ public class ExternalFunctions {
         return v;
     }
 
-    public static double FastPowerFractional(double b, double e) {
+    public static double FPF(double b, double e) {
         if (b == 1d || e == 0d) {
             return 1d;
         }
@@ -41,7 +41,7 @@ public class ExternalFunctions {
         return result;
     }
 
-    public static double abs(double value) {
+    public static double absExt(double value) {
         return Double.longBitsToDouble(
                 Double.doubleToRawLongBits(value) & 0x7fffffffffffffffL);
     }

@@ -1,8 +1,6 @@
 package com.diplom.powerThreads;
 
 import static com.diplom.Data.*;
-import static com.diplom.ExternalFunctions.FastPowerFractional;
-import static com.diplom.ExternalFunctions.abs;
 
 public class Thread9 extends Thread{
     @Override
